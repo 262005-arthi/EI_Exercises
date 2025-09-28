@@ -1,0 +1,83 @@
+import java.util.Scanner;
+class Scheduler {
+    private String orientation,solarPanel;
+    private int data;
+    Scheduler() {
+        this.data = 0;
+        this.orientation = "North";
+        this.solarPanel = "Inactive";
+    }
+    void rotate(String direction){
+         orientation = direction;
+          System.out.println("Satellite rotated to " + orientation);
+    }
+
+    void activatePanels() {
+        solarPanel = "Active";
+        System.out.println("Solar panels activated.");
+    }
+    void deactivatePanels() {
+        solarPanel = "Inactive";
+        System.out.println("Solar panels deactivated.");
+    }
+
+    void collectData() {
+        if (solarPanel.equals("Active")) {
+            data += 10;
+            System.out.println("Data collected. Current data: " + data);
+        } else {
+            System.out.println("Error: Cannot collect data. Solar panels are inactive.");
+        }
+    }    
+    void showStatus() {
+        System.out.println("Orientation: " + orientation);
+        System.out.println("Solar Panels: " + solarPanel);
+        System.out.println("Data Collected: " + data);
+    }
+}
+public class Satellitecontroller {
+    public static void main(String[] args) {
+        Scheduler obj = new Scheduler();
+        Scanner in = new Scanner(System.in);
+
+        boolean running = true;
+        while (running) {
+            System.out.println("\n---- Satellite Command Menu ----");
+            System.out.println("1. Rotate");
+            System.out.println("2. Activate Panels");
+            System.out.println("3. Deactivate Panels");
+            System.out.println("4. Collect Data");
+            System.out.println("5. Show Status");
+            System.out.println("0. Exit");
+            System.out.println("Choose your option......");
+            int choice = in.nextInt();
+            in.nextLine();           //Consume newline
+            switch (choice) {
+                case 1 : {
+                    System.out.print("Enter direction (North/South/East/West): ");
+                    String dir = in.nextLine();
+                    obj.rotate(dir);     
+                    break;       
+                }
+                case 2:
+                    obj.activatePanels();
+                    break;
+                case 3:
+                    obj.deactivatePanels();
+                    break;
+                case 4 :
+                    obj.collectData();
+                    break;
+                case 5 :
+                    obj.showStatus();
+                    break;
+                case 0 :
+                    running = false;
+                    break;
+                default :
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
+}
