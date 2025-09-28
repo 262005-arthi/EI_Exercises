@@ -1,1 +1,111 @@
+// ----------------- Creational Patterns -----------------
+
+// 1. Singleton Pattern
+class Logger {
+    private static Logger instance;
+    private Logger() {}
+    public static synchronized Logger getInstance() {
+        if (instance == null) instance = new Logger();
+        return instance;
+    }
+    public void log(String msg) { System.out.println("[LOG] " + msg); }
+}
+
+// 2. Factory Pattern
+interface Shape { void draw(); }
+class Circle implements Shape { public void draw() { System.out.println("Drawing Circle"); } }
+class Square implements Shape { public void draw() { System.out.println("Drawing Square"); } }
+class ShapeFactory {
+    public Shape createShape(String type) {
+        return switch (type.toLowerCase()) {
+            case "circle" -> new Circle();
+            case "square" -> new Square();
+            default -> throw new IllegalArgumentException("Unknown shape: " + type);
+        };
+    }
+}
+
+// ----------------- Structural Patterns -----------------
+
+// 3. Adapter Pattern
+interface MediaPlayer { void play(String file); }
+class MP3Player implements MediaPlayer { public void play(String file) { System.out.println("Playing mp3: " + file); } }
+class LegacyWavPlayer { public void playWav(String file) { System.out.println("Playing wav: " + file); } }
+class MediaAdapter implements MediaPlayer {
+    private final LegacyWavPlayer legacy = new LegacyWavPlayer();
+    public void play(String file) { legacy.playWav(file); }
+}
+
+// 4. Decorator Pattern
+interface Notifier { void send(String msg); }
+class BasicNotifier implements Notifier { public void send(String msg) { System.out.println("Sending: " + msg); } }
+class SMSNotifier implements Notifier {
+    private final Notifier wrap;
+    public SMSNotifier(Notifier wrap) { this.wrap = wrap; }
+    public void send(String msg) {
+        wrap.send(msg);
+        System.out.println("Also sending SMS: " + msg);
+    }
+}
+
+// ----------------- Behavioral Patterns -----------------
+
+// 5. Observer Pattern
+interface Observer { void update(String msg); }
+class User implements Observer {
+    private final String name;
+    public User(String name) { this.name = name; }
+    public void update(String msg) { System.out.println(name + " received: " + msg); }
+}
+class Subject {
+    private java.util.List<Observer> observers = new java.util.ArrayList<>();
+    public void addObserver(Observer o) { observers.add(o); }
+    public void notifyAll(String msg) { for (Observer o : observers) o.update(msg); }
+}
+
+// 6. Strategy Pattern
+interface PaymentStrategy { void pay(int amount); }
+class CardPayment implements PaymentStrategy { public void pay(int amount) { System.out.println("Paid " + amount + " by Card"); } }
+class UpiPayment implements PaymentStrategy { public void pay(int amount) { System.out.println("Paid " + amount + " by UPI"); } }
+class PaymentContext {
+    private PaymentStrategy strategy;
+    public void setStrategy(PaymentStrategy s) { this.strategy = s; }
+    public void pay(int amount) { strategy.pay(amount); }
+}
+
+// ----------------- Main Demo -----------------
+public class Exercise1Demo {
+    public static void main(String[] args) {
+        // --- Singleton ---
+        Logger.getInstance().log("Starting design pattern demo...");
+
+        // --- Factory ---
+        ShapeFactory factory = new ShapeFactory();
+        factory.createShape("circle").draw();
+        factory.createShape("square").draw();
+
+        // --- Adapter ---
+        MediaPlayer mp3 = new MP3Player();
+        MediaPlayer wav = new MediaAdapter();
+        mp3.play("song.mp3");
+        wav.play("music.wav");
+
+        // --- Decorator ---
+        Notifier notifier = new SMSNotifier(new BasicNotifier());
+        notifier.send("System Alert!");
+
+        // --- Observer ---
+        Subject subject = new Subject();
+        subject.addObserver(new User("Alice"));
+        subject.addObserver(new User("Bob"));
+        subject.notifyAll("New update released!");
+
+        // --- Strategy ---
+        PaymentContext context = new PaymentContext();
+        context.setStrategy(new CardPayment());
+        context.pay(500);
+        context.setStrategy(new UpiPayment());
+        context.pay(200);
+    }
+}
 
